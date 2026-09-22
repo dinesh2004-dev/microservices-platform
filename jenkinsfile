@@ -1,0 +1,53 @@
+pipeline {
+    agent none
+
+    stages {
+        stage('Auth Service: Build & Test') {
+            agent { label 'auth-agent' }
+            steps {
+                echo "Running on Auth Agent Container: ${env.NODE_NAME}"
+                sh 'chmod +x ./mvnw'
+                sh './mvnw clean test -pl auth-service -am -B'
+            }
+        }
+
+        stage('Order Service: Build & Test') {
+            agent { label 'order-agent' }
+            steps {
+                echo "Running on Order Agent Container: ${env.NODE_NAME}"
+                sh 'chmod +x ./mvnw'
+                sh './mvnw clean test -pl order-service -am -B'
+            }
+        }
+
+        stage('Payment Service: Build & Test') {
+            agent { label 'payment-agent' }
+            steps {
+                echo "Running on Payment Agent Container: ${env.NODE_NAME}"
+                sh 'chmod +x ./mvnw'
+                sh './mvnw clean test -pl payment-service -am -B'
+            }
+        }
+
+        stage('Notification Service: Build & Test') {
+            agent { label 'notification-agent' }
+            steps {
+                echo "Running on Notification Agent Container: ${env.NODE_NAME}"
+                sh 'chmod +x ./mvnw'
+                sh './mvnw clean test -pl notification-service -am -B'
+            }
+        }
+    }
+
+    post {
+        always {
+            echo "Multi-agent test and verification stages finished across all agents."
+        }
+        success {
+            echo "All 4 microservices built and passed integration tests successfully!"
+        }
+        failure {
+            echo "One or more agent stages failed. Review the specific node console logs."
+        }
+    }
+}
