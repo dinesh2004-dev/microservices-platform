@@ -1,4 +1,9 @@
-from openjdk:21
-copy target/auth-service-0.0.1-SNAPSHOT.jar auth-service.jar
-expose 8081
-cmd ["java", "-jar", "auth-service.jar"]
+FROM eclipse-temurin:21-jdk
+
+WORKDIR /app
+
+COPY target/*.jar app.jar
+
+EXPOSE 8081
+
+CMD ["java","-jar","app.jar"]
