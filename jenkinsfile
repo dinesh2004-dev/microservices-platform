@@ -38,22 +38,36 @@ pipeline {
             }
         }
 
-        stage('Docker Build') {
-    agent { label 'docker-agent' }
+        stage('Package Services'){
 
-    steps {
-        echo "Building all Docker images using Docker Compose"
-        sh 'docker compose build'
-    }
-}
+            agent { label 'docker-agent' }
+
+            steps{
+                echo "Building JAR files"
+                sh 'chmod +x ./mvnw'
+                sh './mvnw clean package -DskipTests'
+            }
+        }
+
+        stage('Docker Build') {
+            
+            agent { label 'docker-agent' }
+
+            steps {
+                    echo "Building all Docker images using Docker Compose"
+                    sh 'docker compose build'
+            }
+        }
 
         stage('Docker Deploy') {
-    agent { label 'docker-agent' }
+            
+            agent { label 'docker-agent' }
 
-    steps {
-        sh 'docker compose up -d'
-    }
-}
+            steps {
+
+                sh 'docker compose up -d'
+            }
+        }
     }
 
     post {
